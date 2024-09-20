@@ -1,5 +1,6 @@
 import React,{useState} from 'react'
-import {useInputValidation} from '6pp'
+import {useFileHandler, useInputValidation,useStrongPassword} from '6pp'
+import {usernameValidator} from '../utils/validator'
 
 
 
@@ -8,14 +9,25 @@ const Login = () => {
     const toggleLogin=()=>{setLogin((prev)=>!prev)}
     const  name=useInputValidation("")
     const  bio=useInputValidation("")
-    const  username=useInputValidation("")
-    const  password=useInputValidation("")
+    const  username=useInputValidation("",usernameValidator)
+    const  password=useStrongPassword()
+
+    const avatar=useFileHandler("single")
+
+const handleLogin=(e)=>{
+  e.preventDefault()
+}
+
+const handleSignup=(e)=>{
+  e.preventDefault()
+}
   return (
     <>
+   
     <div>
     {isLogin?(
     <>
-      <form action="">
+      <form action="" onSubmit={handleLogin}>
       <div className="min-h-screen bg-gray-100 py-6 flex flex-col justify-center sm:py-12">
   <div className="relative py-3 sm:max-w-xl sm:mx-auto">
     <div
@@ -59,7 +71,7 @@ const Login = () => {
     ):
     (
         <>
-        <form action="">
+        <form action="" onSubmit={handleSignup}>
        
         <div className="min-h-screen bg-gray-100 py-6 flex flex-col justify-center sm:py-12">
       
@@ -73,7 +85,7 @@ const Login = () => {
           <div>
           <div className="flex flex-col space-y-4 items-center">
           <div className="w-20 h-20 rounded-full overflow-hidden bg-slate-400">
-      <img src={""} alt="" className="w-full h-full object-cover" />
+      <img src={avatar.preview} alt="" className="w-full h-full object-cover" />
     </div>
     
    
@@ -84,8 +96,13 @@ const Login = () => {
           <div className="divide-y divide-gray-200">
             <div className="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
             <div className="relative">
-                <input autocomplete="off" id="dp" name="dp" type="file" className="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600" required />
+                <input autocomplete="off" id="dp" name="dp" type="file" onChange={avatar.changeHandler} className="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600" required />
                 <label for="dp" className="absolute left-0 -top-7 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-4 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Image</label>
+                <span className='text-red-600'> {
+                avatar.error && (
+                  avatar.error
+                  )
+              }</span>
               </div>
             <div className="relative">
                 <input  value={name.value} onChange={name.changeHandler}autocomplete="off" id="name" name="name" type="text" className="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600" placeholder="Email address" required />
@@ -95,13 +112,24 @@ const Login = () => {
                 <input value={bio.value} onChange={bio.changeHandler} autocomplete="off" id="bio" name="bio" type="text" className="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600" placeholder="Email address" required />
                 <label for="bio" className="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Bio</label>
               </div>
+             
               <div className="relative">
                 <input  value={username.value} onChange={username.changeHandler} autocomplete="off" id="username" name="username" type="text" className="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600" placeholder="Email address" required />
                 <label for="username" className="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Username</label>
+               <span className='text-red-600'> {
+                username.error && (
+                  username.error
+                  )
+              }</span>
               </div>
               <div className="relative">
                 <input value={password.value} onChange={password.changeHandler}autocomplete="off" id="password" name="password" type="password" className="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600" placeholder="Password" required/>
                 <label for="password" className="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Password</label>
+                <span className='text-red-600'> {
+                password.error && (
+                  password.error
+                  )
+              }</span>
               </div>
               <div className="relative ">
                 <button type="submit"className="bg-cyan-500 text-white rounded-md px-2 py-1 ">Submit</button>
@@ -126,6 +154,7 @@ const Login = () => {
 
     } 
     </div>
+    
     </>
   )
 }
