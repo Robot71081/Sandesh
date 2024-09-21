@@ -1,6 +1,6 @@
 import React from 'react'
 
-const NewGroup = () => {
+const AvatarCard = ({avatar=[],max=4}) => {
   return (
     <div>
       
@@ -8,4 +8,4 @@ const NewGroup = () => {
   )
 }
 
-export default NewGroup
+export default AvatarCard

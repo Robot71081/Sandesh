@@ -1,11 +1,11 @@
 import React from 'react'
 
-const Noti = () => {
+const NewGroup = () => {
   return (
     <div>
-      Noti
+      NewGroup
     </div>
   )
 }
 
-export default Noti
+export default NewGroup
