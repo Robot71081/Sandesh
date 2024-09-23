@@ -4,6 +4,7 @@ import Title from '../shared/Title'
 import ChatList from '../specific/ChatList'
 import { sampleChats } from '../constants/sampleData'
 import { useParams } from 'react-router-dom'
+import Profile from '../specific/Profile'
 
 
 const AppLayout = () =>WrappedComponent=> {
@@ -21,15 +22,16 @@ const AppLayout = () =>WrappedComponent=> {
            <Header/>
            <div className="h-full container mx-auto ">
   <div className="flex flex-col sm:flex-row ">
-    <div className=" hidden sm:block w-full sm:w-1/2 lg:w-1/2 h-full bg-gray-300">
-      <ChatList chats={sampleChats} chatid={chatid} handleDeleteChat={handleDeleteChat} onlineusers={["1","2"]}/>
-    </div>
-    <div className="w-full sm:w-1/2 lg:w-1/2 h-full bg-black">
-    <WrappedComponent {...props}/>
-    </div>
-    <div className="  hidden sm:block w-full sm:w-1/2 lg:w-1/2 h-full bg-red-500">
-     Third
-    </div>
+  <div className="hidden sm:block w-full sm:w-1/3 lg:w-1/4 h-screen bg-white">
+  <ChatList chats={sampleChats} chatid={chatid} handleDeleteChat={handleDeleteChat} onlineusers={["1", "2"]} />
+</div>
+<div className="w-full sm:w-2/3 lg:w-3/4 h-screen bg-white">
+  <WrappedComponent {...props} />
+</div>
+<div className="hidden sm:block w-full sm:w-1/3 lg:w-1/4 h-screen bg-black">
+  <Profile />
+</div>
+
   </div>
 </div>
            

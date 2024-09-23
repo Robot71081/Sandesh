@@ -3,7 +3,7 @@ import ChatItem from '../shared/ChatItem'
 
 const ChatList = ({chats=[],chatid,onlineusers=[],newMessagesAlert=[{chatid:"",count:0}],handleDeleteChat}) => {
     return (
-      <div className='w-full flex flex-col gap-4'>
+      <div className='w-full flex flex-col '>
         {
           chats?.map((data,index)=>{
             const {avatar,_id,name,groupChat,members}=data

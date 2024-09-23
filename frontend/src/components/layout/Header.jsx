@@ -68,9 +68,9 @@ const Header = () => {
       </div>
       </div>
       
-       {isSearch&& <Suspense fallback={<div>Loading...</div>}><Search/></Suspense>}
-       {isNoti&& <Suspense fallback={<div>Loading...</div>}><Noti/></Suspense>}
-       {isNewGroup&& <Suspense fallback={<div>Loading...</div>}><NewGroup/></Suspense>}
+       {isSearch&& <Suspense fallback={<div className='fixed inset-0 bg-black bg-opacity-50 z-40'></div>}><Search/></Suspense>}
+       {isNoti&& <Suspense fallback={<div  className='fixed inset-0 bg-black bg-opacity-50 z-40'></div>}><Noti/></Suspense>}
+       {isNewGroup&& <Suspense fallback={<div  className='fixed inset-0 bg-black bg-opacity-50 z-40'></div>}><NewGroup/></Suspense>}
         
       
      
