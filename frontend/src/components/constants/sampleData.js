@@ -54,10 +54,7 @@ export const sampleNoti=[
 export const sampleMsg=[
     {
         attachments:[
-            {
-            public_id:"dfgdf",
-            url:"https://www.w3schools.com/howto/img_avatar.png"
-            }
+           
         ],
         content:"hello how are you",
         _id:"DFGDFGDF",
@@ -75,8 +72,8 @@ export const sampleMsg=[
             url:"https://www.w3schools.com/howto/img_avatar.png"
             }
         ],
-        content:"hello how are you 2",
-        _id:"DFGDFGDF",
+        content:"",
+        _id:"DFGDtrFGDF",
         sender:{
             _id:"dfgdf",
             name:"roh2"

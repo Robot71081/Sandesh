@@ -1,9 +1,12 @@
 import moment from 'moment';
 import React, { memo } from 'react'
+import { fileFormat } from '../../lib/features';
+import RenderAttachment from './RenderAttachment';
 
 const MessageComponent = ({message,user}) => {
     const {sender,content,attachments=[],createdAt}=message;
     const sameSender=sender?._id===user?._id;
+
     const timeAgo=moment(createdAt).fromNow()
   return (
    
@@ -35,9 +38,9 @@ const MessageComponent = ({message,user}) => {
     attachments.length > 0 && attachments.map((attachment,index)=>{
 
   const url=attachment.url
-  const file="asd"
+  const file=fileFormat(url)
   return <div className='p-4 bg-white shadow-md rounded-md' key={index}>
-   <a href="" target='_blank' download className='text-black'></a>
+   <a href={url} target='_blank' download className='text-black'>{RenderAttachment(file,url)}</a>
   </div>
 
     })

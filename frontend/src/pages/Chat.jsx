@@ -17,7 +17,7 @@ const Chat = () => {
     <div className="flex flex-col space-y-4 p-4 bg-gray-100 h-[90%] overflow-hidden overflow-auto" ref={containerRef}>
     {
       sampleMsg.map((i)=>(
-        <MessageComponent message={i} user={user} />
+        <MessageComponent key={i._id} message={i} user={user} />
       ))
     }
     </div>
