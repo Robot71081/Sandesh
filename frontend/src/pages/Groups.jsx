@@ -1,15 +1,26 @@
-import React, { useState,memo } from 'react'
-import { MdKeyboardBackspace,MdOutlineMenu } from "react-icons/md";
+import React, { useState,memo, useEffect, lazy, Suspense } from 'react'
+import { MdKeyboardBackspace,MdOutlineMenu,MdOutlineDone,MdDeleteOutline } from "react-icons/md";
 import {Link, useNavigate,useSearchParams} from 'react-router-dom'
 import AvatarCard from '../components/shared/AvatarCard'
-import { sampleChats } from '../components/constants/sampleData';
+import { sampleChats, sampleusers } from '../components/constants/sampleData';
 import { FaPencilAlt } from "react-icons/fa";
+import { IoIosPersonAdd } from "react-icons/io";
+import UserItem from '../components/shared/UserItem';
+
+const ConfirmDeleteDialog=lazy(()=>import("../components/dailogs/ConfirmDeleteDialog"))
+const AddMemberDailog=lazy(()=>import("../components/dailogs/AddMemberDailog"))
+const isAddMember=false
+
 
 const Groups = () => {
   const chatId=useSearchParams()[0].get("group")
+  const [groupName,setGroupName]= useState("")
+   const [groupNameUpdatedValue,setGroupNameUpdatedValue]= useState("")
 
   const [isMobileMenuOpen,setIsMobileMenuOpen]=useState(false)
+  const [cnfDeleteDailog,setCnfDeleteDailog]=useState(false)
   const [isEdit,setIsEdit]=useState(false)
+
   const navigate=useNavigate()
   const navBack=()=>{
       navigate("/")
@@ -23,14 +34,52 @@ const handleMobileClose=()=>{
   setIsMobileMenuOpen(false)
 }
 
+const updateGroupName=()=>{
+    setIsEdit(false)
+}
+
+const cnfDeleteHandler=()=>{
+  setCnfDeleteDailog(true)
+}
+
+const closeCnfDeleteHandler=()=>{
+  setCnfDeleteDailog(false)
+}
+
+const deleteHandler=()=>{
+  closeCnfDeleteHandler()
+}
+
+
+const openAddMember=()=>{
+
+}
+const removeMemberHandler=(id)=>{
+
+}
+ useEffect(()=>{
+  if(chatId){
+ setGroupName(`Group Name ${chatId}`)
+ setGroupNameUpdatedValue(`Group Name ${chatId}`)
+  }
+ return()=>{
+   setGroupName("")
+    setGroupNameUpdatedValue("")
+    setIsEdit(false)
+ }
+ },[chatId])
 const GroupName = (
   <div className="flex p-2 items-start">
     {isEdit ? (
-      <></>
+      <div className='flex items-center space-x-2'>
+    
+      <input value={groupNameUpdatedValue} onChange={(e)=>setGroupNameUpdatedValue(e.target.value)} type="text" className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder='dfgdfgdfs'/>
+     <button onClick={updateGroupName}><MdOutlineDone/></button>
+      </div>
     ) : (
       <div className="flex items-center space-x-2">
-        <h1 className="text-lg font-semibold">GroupName</h1>
-        <button onClick={() => setIsEdit(true)} className="text-blue-500">
+        <h1 className="text-lg font-semibold">{groupName}</h1>
+        <button onClick={()=>{setIsEdit(true)}} className="text-blue-500">
           <FaPencilAlt />
         </button>
       </div>
@@ -53,20 +102,62 @@ const GroupName = (
   
   </div>
 
+ 
+
 
   </>
+  const buttonGroup=<div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 p-4">
+ 
+ <button 
+  className="flex items-center text-xl rounded-lg bg-green-500 text-white p-2" 
+  onClick={openAddMember}
+>
+  <IoIosPersonAdd className="mr-2" /> 
+  Add Member
+</button>
+
+   <button className=" flex items-center text-xl rounded-lg bg-red-500 text-white" onClick={cnfDeleteHandler}>
+   <MdDeleteOutline className="mr-2" /> Delete Group
+  </button>
+</div>
+
   return (
-    <div className="container grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  p-4 h-screen ">
-    <div className="bg-blue-300   h-full p-4 hidden sm:flex">
+    <div className="container flex   flex-row items-center  p-4 h-screen ">
+    <div className="bg-blue-300   h-full w-[30%] p-4 hidden sm:flex">
     <GroupsList myGroups={sampleChats} chatId={chatId}/>
     </div>
 
-    <div className="   flex  h-full w-full p-4 ">
+    <div className="  flex flex-col items-center justify-start   h-full w-full p-4 ">
         {IconBtns}
         {
-          GroupName
+         groupName && <>
+         {GroupName}
+         <h1 className='m-8 self-start '>Members</h1>
+         <div className="w-full bg-slate-300 h-[50vh] overflow-auto p-4 flex items-center justify-center">
+  <div className="flex flex-col space-y-4 w-[50%]">
+    {sampleusers.map((i) => (
+      <UserItem 
+        user={i} 
+        isAdded 
+        handler={removeMemberHandler} 
+        key={i._id} 
+      />
+    ))}
+  </div>
+</div>
+
+
+         {buttonGroup}
+         
+         </>
         }
     </div>
+    {
+      isAddMember && <Suspense fallback={<div className='fixed inset-0 bg-black bg-opacity-50 z-40'></div>}><AddMemberDailog/></Suspense>
+    }
+    {
+      cnfDeleteDailog && <Suspense fallback={<div className='fixed inset-0 bg-black bg-opacity-50 z-40'></div>}><ConfirmDeleteDialog isOpen={cnfDeleteDailog} isClose={closeCnfDeleteHandler} deleteHandler={deleteHandler}/></Suspense>
+    }
     <div>
     {isMobileMenuOpen && (
         <div
@@ -96,8 +187,12 @@ const GroupName = (
 }
 
 
+
+
 const GroupsList=({myGroups=[],chatId})=>{
   return (
+
+   
   <div className='container '>
   {
   myGroups.length>0?(myGroups.map((group)=><GroupListItem group={group} chatId={chatId} key={group._id}/>)):(<h1 className='text-center p-4'>No Groups</h1>)
