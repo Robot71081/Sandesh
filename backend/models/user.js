@@ -6,6 +6,10 @@ name:{
     type:String,
     required:true,
 },
+bio: {
+    type: String,
+    required: true,
+  },
 username:{
     type:String,
     required:true,
@@ -30,7 +34,7 @@ avatar:{
 }
 
 },{
-    timestamp:true,
+    timestamps:true,
 })
 
 schema.pre("save",async function(next){

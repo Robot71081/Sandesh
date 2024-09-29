@@ -1,4 +1,4 @@
-import mongoose,{ Schema,model } from "mongoose";
+import mongoose,{ Schema,model,Types } from "mongoose";
 
 const schema=new Schema({
 
@@ -31,8 +31,9 @@ const schema=new Schema({
     
     },
 
-},{
-    timestamp:true,
+},
+{
+    timestamps:true,
 })
 
 

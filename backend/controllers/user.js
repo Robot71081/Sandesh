@@ -9,7 +9,7 @@ import { cookieOptions } from "../utils/features.js";
 //create a new user and save in database and cookies
 const newUser =async(req,res)=>{
    
-    const {name,username,password} =req.body;
+    const {name,username,password,bio} =req.body;
 
    
     const avatar={
@@ -19,6 +19,7 @@ const newUser =async(req,res)=>{
 
    const user= await User.create({
         name,
+        bio,
         username,
         password,
         avatar

@@ -25,8 +25,9 @@ members:[
     },
 ]
 
-},{
-    timestamp:true,
+},
+{
+    timestamps:true,
 })
 
 
