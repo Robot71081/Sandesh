@@ -220,14 +220,21 @@ const addMembers=TryCatch(async (req,res,next)=>{
   
     
      const {chatId}=req.body;
+     const files=req.files || []
+
+     if(files.length<1) return next(new Errorhandler("please upload attachments",400))
+
+     if(files.length>5) return next(new Errorhandler("Files cant be more than 5",400))
      const [chat,me] =await Promise.all([Chat.findById(chatId),User.findById(req.user,"name")])
+
+     
 
     
 
 
      if(!chat) return next(new Errorhandler("Chat not found",404))
 
-     const files =req.files || []
+     
 
      if(files.length<1) return next(new Errorhandler("Please provide attachments",400))
      //upload file here
