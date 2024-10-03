@@ -1,6 +1,10 @@
 import React,{useState} from 'react'
 import {useFileHandler, useInputValidation,useStrongPassword} from '6pp'
 import {usernameValidator} from '../utils/validator'
+import axios from 'axios'
+import { useDispatch } from 'react-redux'
+import { userExists } from '../redux/reducers/auth'
+import toast from 'react-hot-toast'
 
 
 
@@ -13,13 +17,63 @@ const Login = () => {
     const  password=useStrongPassword()
 
     const avatar=useFileHandler("single")
+    const dispatch=useDispatch()
 
-const handleLogin=(e)=>{
+const handleLogin= async (e)=>{
   e.preventDefault()
+  const config={
+    
+      withCredentials:true,
+      headers:{
+        "Content-Type":"application/json"
+      }
+    
+  }
+try {
+  const {data}=await axios.post(`http://localhost:3000/api/v1/user/login`,{
+    username:username.value,
+    password:password.value
+  },config)
+
+  dispatch(userExists(true))
+  toast.success(data.message)
+
+
+
+} catch (error) {
+     toast.error(error?.response?.data?.message|| "Something went wrong")
+}
 }
 
-const handleSignup=(e)=>{
+const handleSignup= async (e)=>{
   e.preventDefault()
+  const formData=new FormData()
+  formData.append("avatar",avatar.file)
+  formData.append("name",name.value)
+  formData.append("bio",bio.value)
+  formData.append("username",username.value)
+  formData.append("password",password.value)
+
+  const config ={
+    withCredentials:true,
+    headers:{
+      "Content-type":"multipart/form-data"
+    }
+  }
+
+  try {
+    const {data}=await axios.post(`http://localhost:3000/api/v1/user/new`,formData,config)
+  
+    dispatch(userExists(true))
+    toast.success(data.message)
+  
+  
+  
+  } catch (error) {
+       toast.error(error?.response?.data?.message|| "Something went wrong")
+  }
+
+
 }
   return (
     <>

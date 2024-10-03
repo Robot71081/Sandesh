@@ -5,25 +5,20 @@ import AvatarCard from './AvatarCard'
 const ChatItem = ({avatar=[],name,_id,groupChat=false,sameSender,isOnline,newMessageAlert,index=0,handleDeleteChat}) => {
   return (
    <Link to={`/chat/${_id}`} onContextMenu={(e)=>handleDeleteChat(e,_id,groupChat)} className='text-black p-1 hover:bg-white'>
-    <div style={{
-        display:"flex",alignItems:"center",padding:"1rem",backgroundColor:sameSender?"black":"unset",color:sameSender?"white":"unset",gap:"1rem",position:"relative"}}>
+  <div className={`flex items-center p-4 ${sameSender ? 'bg-black text-white' : 'bg-transparent text-black'} gap-4 relative`}>
+  <AvatarCard avatar={avatar} />
+  <div className="relative flex-grow"> {/* Use flex-grow to allow this div to take available space */}
+    <span className="block">{name}</span>
+    {newMessageAlert && (
+      <span className="text-white">{newMessageAlert.count} New Messages</span>
+    )}
+  </div>
+  {isOnline && (
+    <div className="w-5 h-5 rounded-full bg-green-500 absolute  right-1 " />
+  )}
+</div>
 
-        <AvatarCard avatar={avatar}/>
-        <div>
-            
-                <span>{name}</span><br/>
-                {newMessageAlert&&(
-                    <span className='text-white'>{newMessageAlert.count}New Messages</span>
-                )}
-           
-           {
-            isOnline && (<div className='w-5 h-5 rounded-full bg-green-500 absolute top-5 right-1 '></div>)
-        }
-            </div>
-       
-    
 
-    </div>
    </Link>
   )
 }
