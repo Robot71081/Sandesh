@@ -4,18 +4,18 @@ import { MdAlternateEmail } from "react-icons/md";
 import { SlCalender } from "react-icons/sl";
 import moment from 'moment'
 
-const Profile = () => {
+const Profile = ({user}) => {
   return (
     <div className='flex flex-col items-center justify-center space-y-8'>
     <img 
-      src="https://via.placeholder.com/150" 
+      src={user?.avatar?.url} 
       alt="User Avatar" 
       className="w-[200px] h-[200px] rounded-full border-2 border-gray-300 object-cover"
     />
-    <ProfileCard heading={"Bio"} text={"random random randmo fhfgb fgdf"} />
-    <ProfileCard heading={"username"} text={"random random randmo fhfgb fgdf"} Icon={<MdAlternateEmail/>}/>
-    <ProfileCard heading={"name"} text={"random random randmo fhfgb fgdf"} Icon={<FaFaceGrinWink/>}/>
-    <ProfileCard heading={"joined"} text={moment('2024-09-11T00:00:00.000Z').fromNow()} Icon={<SlCalender/>}/>
+    <ProfileCard heading={"Bio"} text={user?.bio} />
+    <ProfileCard heading={"username"} text={user?.username} Icon={<MdAlternateEmail/>}/>
+    <ProfileCard heading={"name"} text={user?.name} Icon={<FaFaceGrinWink/>}/>
+    <ProfileCard heading={"joined"} text={moment(user?.createdAt).fromNow()} Icon={<SlCalender/>}/>
   </div>
   )
 }

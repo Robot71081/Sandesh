@@ -1,23 +1,66 @@
 import React, { memo } from 'react'
 import { sampleNoti } from '../constants/sampleData'
+import { useAcceptFriendRequestMutation, useGetNotisQuery } from '../../redux/api/api'
+import { useErrors } from '../../hooks/hooks'
+import { useDispatch, useSelector } from 'react-redux'
+import { setIsNotification } from '../../redux/reducers/misc'
+import toast from 'react-hot-toast'
 
 const Noti = () => {
-  const friendRequestHandler=({_id,accept})=>{
+  const dispatch=useDispatch()
+  
+  const {isLoading,isError,data,error}= useGetNotisQuery()
 
+ const [acceptRequest]= useAcceptFriendRequestMutation()
+  const friendRequestHandler= async({_id,accept})=>{
+    
+        try {
+          const res= await acceptRequest({requestId:_id,accept})
+          if(res.data?.success){
+            toast.success(res.data.message)
+          }else{
+             toast.error(res.data?.error|| "Something went wrong")
+          }
+        } catch (error) {
+          toast.error(error.message|| "Something went wrong")
+          console.log(error)
+        }
   }
+  const closeHandler=()=>dispatch(setIsNotification(false))
+
+  useErrors([{error,isError}])
   return (
     
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+      
     
-      <div className="bg-white rounded-lg shadow-lg w-1/3 p-6">
-        <div className='flex flex-col p-[1rem]'>
-        <h2 className="text-xl font-semibold mb-4 text-center overflow-hidden">Notifications</h2>
-        {
-          sampleNoti.length>0?sampleNoti.map((i)=><NotiItem sender={i.sender} _id={i._id} handler={friendRequestHandler} key={i._id}/>):<span className='text-center'>No Notifications</span>
-        }
-        </div>
-       
-      </div>
+      <div className="bg-white rounded-lg shadow-lg w-1/3 p-6 relative">
+  <button
+    onClick={closeHandler} // Add your close dialog function here
+    className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 focus:outline-none"
+  >
+    &times; {/* Close icon, you can replace it with an SVG icon if desired */}
+  </button>
+
+  <div className='flex flex-col p-[1rem]'>
+    <h2 className="text-xl font-semibold mb-4 text-center overflow-hidden">Notifications</h2>
+
+    {isLoading ? (
+      <div className='fixed inset-0 bg-black bg-opacity-50 z-40'></div>
+    ) : (
+      <>
+        {data?.allRequests.length > 0 ? (
+          data.allRequests.map((i) => (
+            <NotiItem sender={i.sender} _id={i._id} handler={friendRequestHandler} key={i._id} />
+          ))
+        ) : (
+          <span className='text-center'>No Notifications</span>
+        )}
+      </>
+    )}
+  </div>
+</div>
+
     </div>
     
   )

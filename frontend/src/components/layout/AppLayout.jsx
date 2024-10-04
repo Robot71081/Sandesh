@@ -9,6 +9,7 @@ import { useMyChatsQuery } from '../../redux/api/api'
 import { useDispatch, useSelector } from 'react-redux'
 import { setIsMobileMenuFriend } from '../../redux/reducers/misc'
 import { useErrors } from '../../hooks/hooks'
+import { getSocket } from '../../socket'
 
 
 
@@ -20,8 +21,11 @@ const AppLayout = () =>WrappedComponent=> {
  
     const params=useParams()
     const chatid=params.chatid
+    const socket =getSocket()
+    console.log(socket)
    const dispatch=useDispatch()
     const {isMobileMenuFriend}= useSelector((state)=>state.misc)
+    const {user}= useSelector((state)=>state.auth)
 
     const {isLoading,isError,data,error,refetch}= useMyChatsQuery("")
 
@@ -79,7 +83,7 @@ const AppLayout = () =>WrappedComponent=> {
   <WrappedComponent {...props} />
 </div>
 <div className="hidden sm:block w-full sm:w-1/3 lg:w-1/4 h-screen bg-black">
-  <Profile />
+  <Profile user={user}/>
 </div>
 
   </div>

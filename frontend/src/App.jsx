@@ -7,6 +7,7 @@ import { server } from './components/constants/config.js'
 import { useDispatch, useSelector } from 'react-redux'
 import { userExists, userNotExists } from './redux/reducers/auth.js'
 import {Toaster} from 'react-hot-toast'
+import { SocketProvider } from './socket.jsx'
 
 
 
@@ -35,7 +36,9 @@ const App = () => {
     <BrowserRouter>
     <Suspense fallback={<LayoutLoader/>}>
     <Routes>
-    <Route path='/' element={<ProtectRoute user={user}/>}>
+    <Route path='/' element={<SocketProvider>
+      <ProtectRoute user={user}/>
+    </SocketProvider>}>
       <Route path='/' element={<Home/>}/>
       
       <Route path='/chat/:chatid' element={<Chat/>}/>

@@ -9,9 +9,9 @@ import { MdOutlinePlaylistAdd } from "react-icons/md";
 import {useNavigate} from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { userNotExists } from '../../redux/reducers/auth';
-import { setIsMobileMenuFriend } from '../../redux/reducers/misc';
+import { setIsMobileMenuFriend, setIsNotification, setIsSearch } from '../../redux/reducers/misc';
 
 
 const Header = () => {
@@ -21,22 +21,24 @@ const Header = () => {
     const Search=lazy(()=>import('../specific/Search'))
     const Noti=lazy(()=>import('../specific/Noti'))
     const NewGroup=lazy(()=>import('../specific/NewGroup'))
-    const [isSearch,setisSearch]=useState(false)
+
+  const {isSearch}= useSelector(state=>state.misc)
+  const {isNotification}= useSelector(state=>state.misc)
+
+    
     const [isNewGroup,setisNewGroup]=useState(false)
-    const [isLogout,setisLogout]=useState(false)
-    const [isNoti,setisNoti]=useState(false)
     
     
-    const handleSearch=()=>{
-       setisSearch(prev=>!prev)
-    }
+    
+    
+    const handleSearch=()=>dispatch(setIsSearch(true))
     const openGroup=()=>{
        setisNewGroup(prev=>!prev)
     }
     const navGroup=()=>navigate("/groups")
 
     const openNoti=()=>{
-        setisNoti(prev=>!prev)
+      dispatch(setIsNotification(true))
      }
 
      const handleButton=()=>{
@@ -86,7 +88,7 @@ const Header = () => {
 </div>
 
        {isSearch&& <Suspense fallback={<div className='fixed inset-0 bg-black bg-opacity-50 z-40'></div>}><Search/></Suspense>}
-       {isNoti&& <Suspense fallback={<div  className='fixed inset-0 bg-black bg-opacity-50 z-40'></div>}><Noti/></Suspense>}
+       {isNotification&& <Suspense fallback={<div  className='fixed inset-0 bg-black bg-opacity-50 z-40'></div>}><Noti/></Suspense>}
        {isNewGroup&& <Suspense fallback={<div  className='fixed inset-0 bg-black bg-opacity-50 z-40'></div>}><NewGroup/></Suspense>}
         
       

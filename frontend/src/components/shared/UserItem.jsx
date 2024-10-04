@@ -11,7 +11,7 @@ const UserItem = ({user,handler,handlerIsLoading,isAdded=false}) => {
      <li className="flex items-center justify-between  hover:bg-gray-100">
       <div className='flex space-x-5 flex-row items-center w-full '>
       <img 
-    src="https://via.placeholder.com/150" 
+    src={avatar}
     alt="User Avatar" 
     className="w-10 h-10 rounded-full border-2 border-gray-300 object-cover"
   />
