@@ -24,6 +24,7 @@ const Header = () => {
 
   const {isSearch}= useSelector(state=>state.misc)
   const {isNotification}= useSelector(state=>state.misc)
+  const {notificationCount}= useSelector(state=>state.chat)
 
     
     const [isNewGroup,setisNewGroup]=useState(false)
@@ -78,8 +79,8 @@ const Header = () => {
     <button className="mx-2" onClick={navGroup}>
       <FaUserGroup />
     </button>
-    <button className="mx-2" onClick={openNoti}>
-      <IoIosNotifications />
+    <button className="mx-2" onClick={openNoti} value={notificationCount}>
+      <IoIosNotifications />{notificationCount}
     </button>
     <button className="mx-2" onClick={logoutHandler}>
       <RiLogoutBoxRFill />

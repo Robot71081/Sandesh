@@ -23,21 +23,21 @@ try {
   const authToken = socket.request.cookies[SANDESH_TOKEN];
 
   if (!authToken)
-    return next(new ErrorHandler("Please login to access this route", 401));
+    return next(new Errorhandler("Please login to access this route", 401));
 
   const decodedData = jwt.verify(authToken, process.env.JWT_SECRET);
 
   const user = await User.findById(decodedData._id);
 
   if (!user)
-    return next(new ErrorHandler("Please login to access this route", 401));
+    return next(new Errorhandler("Please login to access this route", 401));
 
   socket.user = user;
 
   return next();
 } catch (error) {
   console.log(error);
-  return next(new ErrorHandler("Please login to access this route", 401));
+  return next(new Errorhandler("Please login to access this route", 401));
 }
 
 }

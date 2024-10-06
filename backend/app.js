@@ -34,6 +34,7 @@ const port =process.env.PORT || 3000
 const app=express();
 const server=createServer(app)
 const io=new Server(server,{cors:corsOption})
+app.set("io",io)
 
 //using middleware here
 
@@ -73,12 +74,10 @@ io.use((socket, next) => {
 io.on("connection",(socket)=>{
    
 
-    const user={
-        _id:"dfgdf",
-        name:"random"
-    }
+    const user=socket.user
+    
     userSocketIDs.set(user._id.toString(),socket.id)
-    console.log(userSocketIDs)
+   
 
     socket.on(NEW_MESSAGE,async ({chatId,members,message})=>{
         const msgForRealTime={
@@ -98,6 +97,7 @@ io.on("connection",(socket)=>{
             sender:user._id,
             chat:chatId
         }
+       
 
         const memberSockets=getSockets(members)
         io.to(memberSockets).emit(NEW_MESSAGE,{

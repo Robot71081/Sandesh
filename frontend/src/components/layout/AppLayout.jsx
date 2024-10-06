@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import Header from './Header'
 import Title from '../shared/Title'
 import ChatList from '../specific/ChatList'
@@ -8,8 +8,10 @@ import Profile from '../specific/Profile'
 import { useMyChatsQuery } from '../../redux/api/api'
 import { useDispatch, useSelector } from 'react-redux'
 import { setIsMobileMenuFriend } from '../../redux/reducers/misc'
-import { useErrors } from '../../hooks/hooks'
+import { useErrors, useSocketEvents } from '../../hooks/hooks'
 import { getSocket } from '../../socket'
+import { NEW_MESSAGE_ALERT, NEW_REQUEST } from '../constants/event'
+import { incrementNotification } from '../../redux/reducers/chat'
 
 
 
@@ -26,6 +28,7 @@ const AppLayout = () =>WrappedComponent=> {
    const dispatch=useDispatch()
     const {isMobileMenuFriend}= useSelector((state)=>state.misc)
     const {user}= useSelector((state)=>state.auth)
+    
 
     const {isLoading,isError,data,error,refetch}= useMyChatsQuery("")
 
@@ -36,8 +39,21 @@ const AppLayout = () =>WrappedComponent=> {
           console.log("delete chat",_id)
 
     }
+    //const newMessageAlertListener=useCallback(()=>{},[])
+    const newRequestListener = useCallback(() => {
+      dispatch(incrementNotification());
+    }, [dispatch]);
 
     const handleMobileClose=()=>dispatch(setIsMobileMenuFriend(false))
+    const eventHandlers = {
+     // [NEW_MESSAGE_ALERT]: newMessageAlertListener,
+      [NEW_REQUEST]: newRequestListener,
+     
+    };
+
+    useSocketEvents(socket, eventHandlers);
+
+    
      return(
         <>
          <Title />
@@ -60,7 +76,7 @@ const AppLayout = () =>WrappedComponent=> {
             >
               <div className="p-4">
                 
-                <ChatList chats={data?.chats} chatid={chatid} handleDeleteChat={handleDeleteChat} onlineusers={["1", "2"]} />
+                <ChatList  chats={data?.chats} chatid={chatid} handleDeleteChat={handleDeleteChat} onlineusers={["1", "2"]} />
                
               </div>
             </div>
@@ -80,7 +96,7 @@ const AppLayout = () =>WrappedComponent=> {
   )
  }
 <div className="w-full sm:w-2/3 lg:w-3/4 h-screen bg-white">
-  <WrappedComponent {...props} />
+  <WrappedComponent {...props} chatId={chatid} user={user} />
 </div>
 <div className="hidden sm:block w-full sm:w-1/3 lg:w-1/4 h-screen bg-black">
   <Profile user={user}/>

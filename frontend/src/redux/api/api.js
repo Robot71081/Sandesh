@@ -4,7 +4,7 @@ const api=createApi({
 
    reducerPath:"api",
    baseQuery:fetchBaseQuery({baseUrl:`http://localhost:3000/api/v1/`}),
-   tagTypes:["Chat","User"],
+   tagTypes:["Chat","User","Message"],
 
    endpoints:(builder)=>({
     myChats:builder.query({
@@ -60,6 +60,43 @@ acceptFriendRequest:builder.mutation({
 
 }),
 
+chatDetails:builder.query({
+    query:({chatId,populate=false})=>{
+       let url =`chat/${chatId}`
+       if(populate) url+="?populate=true"
+
+        return {
+            url,
+            credentials:"include"
+        }
+       
+    },
+   providesTags:["Chat"]
+
+}),
+
+getMessages:builder.query({
+    query:({chatId,page})=>({
+         
+        url:`chat/message/${chatId}?page=${page}`,
+            credentials:"include"
+    }),
+    
+   providesTags:["Message"]
+
+}),
+
+sendAttachments:builder.mutation({
+    query:(data)=>({
+        url:"chat/message",
+        method:"POST",
+        credentials:"include",
+        body:data,
+    }),
+    
+
+}),
+
    })
 
 
@@ -69,4 +106,4 @@ acceptFriendRequest:builder.mutation({
 
 
 export default api
-export const {useMyChatsQuery,useLazySearchUserQuery,useSendFriendRequestMutation,useGetNotisQuery,useAcceptFriendRequestMutation}= api
+export const {useSendAttachmentsMutation,useGetMessagesQuery,useMyChatsQuery,useLazySearchUserQuery,useSendFriendRequestMutation,useGetNotisQuery,useAcceptFriendRequestMutation,useChatDetailsQuery}= api
