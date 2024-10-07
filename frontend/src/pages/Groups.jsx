@@ -6,6 +6,9 @@ import { sampleChats, sampleusers } from '../components/constants/sampleData';
 import { FaPencilAlt } from "react-icons/fa";
 import { IoIosPersonAdd } from "react-icons/io";
 import UserItem from '../components/shared/UserItem';
+import { useMyGroupsQuery } from '../redux/api/api';
+import { useErrors } from '../hooks/hooks';
+import { LayoutLoader } from '../components/layout/Loaders';
 
 const ConfirmDeleteDialog=lazy(()=>import("../components/dailogs/ConfirmDeleteDialog"))
 const AddMemberDailog=lazy(()=>import("../components/dailogs/AddMemberDailog"))
@@ -21,7 +24,21 @@ const Groups = () => {
   const [cnfDeleteDailog,setCnfDeleteDailog]=useState(false)
   const [isEdit,setIsEdit]=useState(false)
 
+
+
+
+  const myGroups=useMyGroupsQuery()
+  console.log(myGroups.data)
+  const errors=[{
+    isError:myGroups.isError,
+    error:myGroups.error
+  }]
+
+  useErrors(errors)
+
   const navigate=useNavigate()
+
+  
   const navBack=()=>{
       navigate("/")
   }
@@ -121,7 +138,7 @@ const GroupName = (
   </button>
 </div>
 
-  return (
+  return myGroups.isLoading?<LayoutLoader/> :(
     <div className="container flex   flex-row items-center  p-4 h-screen ">
     <div className="bg-blue-300   h-full w-[30%] p-4 hidden sm:flex">
     <GroupsList myGroups={sampleChats} chatId={chatId}/>

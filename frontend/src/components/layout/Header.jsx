@@ -11,7 +11,8 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
 import { userNotExists } from '../../redux/reducers/auth';
-import { setIsMobileMenuFriend, setIsNotification, setIsSearch } from '../../redux/reducers/misc';
+import { setIsMobileMenuFriend, setIsNotification, setIsSearch ,setIsNewGroup} from '../../redux/reducers/misc';
+import { resetNotificationCount } from '../../redux/reducers/chat';
 
 
 const Header = () => {
@@ -21,29 +22,32 @@ const Header = () => {
     const Search=lazy(()=>import('../specific/Search'))
     const Noti=lazy(()=>import('../specific/Noti'))
     const NewGroup=lazy(()=>import('../specific/NewGroup'))
+    const {isNewGroup}= useSelector((state)=>state.misc)
 
   const {isSearch}= useSelector(state=>state.misc)
   const {isNotification}= useSelector(state=>state.misc)
   const {notificationCount}= useSelector(state=>state.chat)
 
     
-    const [isNewGroup,setisNewGroup]=useState(false)
+    
     
     
     
     
     const handleSearch=()=>dispatch(setIsSearch(true))
     const openGroup=()=>{
-       setisNewGroup(prev=>!prev)
+       dispatch(setIsNewGroup(true))
     }
     const navGroup=()=>navigate("/groups")
 
     const openNoti=()=>{
       dispatch(setIsNotification(true))
+      dispatch(resetNotificationCount())
      }
 
      const handleButton=()=>{
       dispatch(setIsMobileMenuFriend(true))
+      
    }
 
 
@@ -79,8 +83,10 @@ const Header = () => {
     <button className="mx-2" onClick={navGroup}>
       <FaUserGroup />
     </button>
-    <button className="mx-2" onClick={openNoti} value={notificationCount}>
-      <IoIosNotifications />{notificationCount}
+    <button className="relative flex items-center mx-2 p-2 bg-transparent border-none cursor-pointer" onClick={openNoti} value={notificationCount}>
+      <IoIosNotifications />  <span className="absolute top-0 right-0 bg-red-600 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+          {notificationCount}
+        </span>
     </button>
     <button className="mx-2" onClick={logoutHandler}>
       <RiLogoutBoxRFill />

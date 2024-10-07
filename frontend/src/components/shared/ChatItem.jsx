@@ -10,7 +10,7 @@ const ChatItem = ({avatar=[],name,_id,groupChat=false,sameSender,isOnline,newMes
   <div className="relative flex-grow"> {/* Use flex-grow to allow this div to take available space */}
     <span className="block">{name}</span>
     {newMessageAlert && (
-      <span className="text-white">{newMessageAlert.count} New Messages</span>
+      <span className="text-black">{newMessageAlert.count} New Messages</span>
     )}
   </div>
   {isOnline && (

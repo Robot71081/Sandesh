@@ -3,14 +3,14 @@ import {Server}  from "socket.io"
 import {createServer} from "http"
 
 import { connectDB } from "./utils/features.js";
-import dotenv from "dotenv"
+import dotenv, { configDotenv } from "dotenv"
 import { errorMiddleware } from "./middlewares/error.js";
 import cookieParser from 'cookie-parser'
 
 import userRoute from './routes/user.js'
 import chatRoute from './routes/chat.js'
 import { createGroupChats, createMessagesInAChat, createSingleChats, createUser } from "./seeders/user.js";
-import { NEW_MESSAGE, NEW_MESSAGE_ALERT } from "./constants/event.js";
+import { NEW_MESSAGE, NEW_MESSAGE_ALERT, START_TYPING, STOP_TYPING } from "./constants/event.js";
 import {v4 as uuid} from "uuid"
 import { getSockets } from "./lib/helper.js";
 import { Message } from "./models/message.js";
@@ -117,6 +117,16 @@ io.on("connection",(socket)=>{
        
         
     
+    })
+
+    socket.on(START_TYPING,({members,chatId})=>{
+        const membersSocket=getSockets(members)
+        socket.to(membersSocket).emit(START_TYPING,{chatId})
+    })
+
+    socket.on(STOP_TYPING,({members,chatId})=>{
+        const membersSocket=getSockets(members)
+        socket.to(membersSocket).emit(STOP_TYPING,{chatId})
     })
 
     socket.on("disconnect",()=>{

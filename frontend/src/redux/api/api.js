@@ -82,7 +82,7 @@ getMessages:builder.query({
             credentials:"include"
     }),
     
-   providesTags:["Message"]
+   keepUnusedDataFor:0
 
 }),
 
@@ -97,6 +97,31 @@ sendAttachments:builder.mutation({
 
 }),
 
+myGroups:builder.query({
+    query:()=>({
+        url:"chat/my/groups",
+        credentials:"include"
+    }),
+    providesTags:["Chats"]
+}),
+
+availableFriends: builder.query({
+    query: ( chatId ) => {
+      let url = `user/friends`;
+      if (chatId) {
+        url += `?chatId=${chatId}`;
+      }
+  
+      return {
+        url,
+        credentials: "include",
+      };
+    },
+    providesTags: ["Chat"],
+  }),
+  
+
+
    })
 
 
@@ -106,4 +131,4 @@ sendAttachments:builder.mutation({
 
 
 export default api
-export const {useSendAttachmentsMutation,useGetMessagesQuery,useMyChatsQuery,useLazySearchUserQuery,useSendFriendRequestMutation,useGetNotisQuery,useAcceptFriendRequestMutation,useChatDetailsQuery}= api
+export const {useAvailableFriendsQuery,useMyGroupsQuery,useSendAttachmentsMutation,useGetMessagesQuery,useMyChatsQuery,useLazySearchUserQuery,useSendFriendRequestMutation,useGetNotisQuery,useAcceptFriendRequestMutation,useChatDetailsQuery}= api

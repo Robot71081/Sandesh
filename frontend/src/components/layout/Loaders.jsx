@@ -18,4 +18,8 @@ export const LayoutLoader = () => {
   )
 }
 
+export const TypingLoader =()=>{
+  return "Typing..."
+}
+
 

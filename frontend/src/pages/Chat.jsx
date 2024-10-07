@@ -6,12 +6,14 @@ import { sampleMsg } from '../components/constants/sampleData';
 import MessageComponent from '../components/shared/MessageComponent';
 import { getSocket } from '../socket';
 import { useChatDetailsQuery, useGetMessagesQuery } from '../redux/api/api';
-import { NEW_MESSAGE } from '../components/constants/event';
+import { ALERT, NEW_MESSAGE, START_TYPING, STOP_TYPING } from '../components/constants/event';
 import { useCallback } from 'react';
 import { useErrors, useSocketEvents } from '../hooks/hooks';
 import {useInfiniteScrollTop} from '6pp'
 import { useDispatch, useSelector } from 'react-redux';
 import { setIsFileMenu } from '../redux/reducers/misc';
+import { removeNewMsgAlert } from '../redux/reducers/chat';
+import { TypingLoader } from '../components/layout/Loaders';
 
 
 const Chat = ({chatId,user}) => {
@@ -23,9 +25,15 @@ const Chat = ({chatId,user}) => {
   const [message,setMessage] =useState("")
   const [messages,setMessages] =useState([])
   const [page,setPage]=useState(1)
+  const [typing,setTyping]=useState(false)
+  const [userTyping,setUserTyping]=useState(false)
+  const typingTimeout=useRef(null)
+
   const [fileMenuAnchor,setFileMenuAnchor]=useState(null)
  const chatDetails= useChatDetailsQuery({chatId,skip:!chatId})
  const oldMessagesChunk=useGetMessagesQuery({chatId,page})
+ const bottomRef=useRef(null)
+
 
  
  const {data:oldMessages,setData:setOldMessages} =useInfiniteScrollTop(containerRef,oldMessagesChunk.data?.totalPages,page,setPage,oldMessagesChunk.data?.messages)
@@ -36,6 +44,21 @@ const Chat = ({chatId,user}) => {
   ]
   
   const members=chatDetails?.data?.chat?.members
+
+
+  const msgOnChange =(e)=>{
+
+    setMessage(e.target.value)
+    if(!typing) {
+      socket.emit(START_TYPING,{members,chatId})
+      setTyping(true)
+    }
+    if(typingTimeout.current) clearTimeout(typingTimeout.current)
+   typingTimeout.current= setTimeout(() => {
+      socket.emit(STOP_TYPING,{members,chatId})
+      setTyping(false)
+    }, 2000);
+  }
   const {isFileMenu}=useSelector((state)=>state.misc)
 
   const handleFileOpen =(e)=>{
@@ -53,12 +76,58 @@ const Chat = ({chatId,user}) => {
 
       
   }
+
+  useEffect(()=>{
+    dispatch(removeNewMsgAlert(chatId))
+      return()=>{
+        setMessages([])
+        setMessage("")
+        setOldMessages([])
+        setPage(1)
+      }
+  },[chatId])
+
+  useEffect(()=>{
+    if(bottomRef.current) bottomRef.current.scrollIntoView({behavior:"smooth"})
+      
+  },[messages])
   const newMsgHandler =useCallback((data)=>{
+    if(data.chatId!==chatId) return
     
     setMessages(prev=>[...prev,data.message])
-  },[])
+  },[chatId])
 
-  const eventHandler={[NEW_MESSAGE]:newMsgHandler}
+  const startTypingListener =useCallback((data)=>{
+    if(data.chatId!==chatId) return
+     
+     setUserTyping(true)
+  },[chatId])
+
+  const stopTypingListener =useCallback((data)=>{
+    if(data.chatId!==chatId) return
+    
+     setUserTyping(false)
+  },[chatId])
+
+  const alertListener =useCallback((content)=>{
+    const msgForAlert={
+      content,
+    
+      sender:{
+          _id:"sdgdfgd",
+          name:"Admin"
+
+      },
+      chat:chatId,
+      createdAt:new Date().toISOString()
+  }
+  setMessages((prev)=>[...prev,msgForAlert])
+  },[chatId])
+
+  const eventHandler={[NEW_MESSAGE]:newMsgHandler,
+    [START_TYPING]:startTypingListener,
+    [ALERT]:alertListener,
+    [STOP_TYPING]:stopTypingListener}
   useSocketEvents(socket,eventHandler)
   useErrors(errors)
 
@@ -76,6 +145,8 @@ const Chat = ({chatId,user}) => {
         <MessageComponent key={i._id} message={i} user={user} />
       ))
     }
+    {userTyping && <TypingLoader/>}
+    <div ref={bottomRef}/>
     </div>
    
     <form className='h-[10%]' onSubmit={submitHandler}>
@@ -90,7 +161,7 @@ const Chat = ({chatId,user}) => {
       placeholder="Enter message here"
       className='flex-grow h-full border-none outline-none p-2 rounded-3xl bg-gray-100'
       value={message}
-      onChange={(e)=>setMessage(e.target.value)}
+      onChange={msgOnChange}
     />
 
     <button type="submit" className="flex items-center justify-center bg-blue-500 rounded-lg p-[0.5rem] hover:bg-blue-800  text-white">

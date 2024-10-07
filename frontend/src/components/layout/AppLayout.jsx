@@ -11,7 +11,8 @@ import { setIsMobileMenuFriend } from '../../redux/reducers/misc'
 import { useErrors, useSocketEvents } from '../../hooks/hooks'
 import { getSocket } from '../../socket'
 import { NEW_MESSAGE_ALERT, NEW_REQUEST } from '../constants/event'
-import { incrementNotification } from '../../redux/reducers/chat'
+import { incrementNotification, setNewMsgAlert } from '../../redux/reducers/chat'
+import { getOrSaveFromStorage } from '../../lib/features'
 
 
 
@@ -28,25 +29,34 @@ const AppLayout = () =>WrappedComponent=> {
    const dispatch=useDispatch()
     const {isMobileMenuFriend}= useSelector((state)=>state.misc)
     const {user}= useSelector((state)=>state.auth)
+    const {newMsgAlert}= useSelector((state)=>state.chat)
+    
     
 
     const {isLoading,isError,data,error,refetch}= useMyChatsQuery("")
 
     useErrors([{isError,error}])
+
+    useEffect(()=>{
+      getOrSaveFromStorage({key:NEW_MESSAGE_ALERT,value:newMsgAlert})
+    },[newMsgAlert])
    
     const handleDeleteChat=(e,_id,groupChat)=>{
           e.preventDefault()
           console.log("delete chat",_id)
 
     }
-    //const newMessageAlertListener=useCallback(()=>{},[])
+    const newMessageAlertListener=useCallback((data)=>{
+      if(data.chatId===chatid) return
+      dispatch(setNewMsgAlert(data))
+    },[chatid])
     const newRequestListener = useCallback(() => {
       dispatch(incrementNotification());
     }, [dispatch]);
 
     const handleMobileClose=()=>dispatch(setIsMobileMenuFriend(false))
     const eventHandlers = {
-     // [NEW_MESSAGE_ALERT]: newMessageAlertListener,
+      [NEW_MESSAGE_ALERT]: newMessageAlertListener,
       [NEW_REQUEST]: newRequestListener,
      
     };
@@ -76,7 +86,7 @@ const AppLayout = () =>WrappedComponent=> {
             >
               <div className="p-4">
                 
-                <ChatList  chats={data?.chats} chatid={chatid} handleDeleteChat={handleDeleteChat} onlineusers={["1", "2"]} />
+                <ChatList  chats={data?.chats} chatid={chatid} handleDeleteChat={handleDeleteChat} newMessagesAlert={newMsgAlert} onlineusers={["1", "2"]} />
                
               </div>
             </div>
@@ -91,7 +101,7 @@ const AppLayout = () =>WrappedComponent=> {
  {
   isLoading ? (<div className='fixed inset-0 bg-black bg-opacity-50 z-40'></div>) :(
     <div className="hidden sm:block w-full sm:w-1/3 lg:w-1/4 h-screen bg-white">
-    <ChatList chats={data?.chats} chatid={chatid} handleDeleteChat={handleDeleteChat} onlineusers={["1", "2"]} />
+    <ChatList chats={data?.chats} chatid={chatid} handleDeleteChat={handleDeleteChat} newMessagesAlert={newMsgAlert} onlineusers={["1", "2"]} />
   </div>
   )
  }
